@@ -1,0 +1,526 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBridge - Gestão Completa</title>
+    <style>
+        :root {
+            --primary-blue: #0288d1;
+            --light-blue: #e1f5fe;
+            --white: #ffffff;
+            --text-dark: #333;
+            --danger: #d32f2f;
+            --warning: #fbc02d;
+            --grey: #757575;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-blue);
+            margin: 0;
+            padding: 0;
+            color: var(--text-dark);
+        }
+
+        header {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 1rem 2rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: var(--white);
+            margin-bottom: 20px;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--primary-blue);
+            font-weight: bold;
+            border-bottom: 3px solid transparent;
+            transition: 0.3s;
+        }
+
+        nav button:hover, nav button.active {
+            border-bottom: 3px solid var(--primary-blue);
+            background-color: #f0f9ff;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background-color: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h2 { color: var(--primary-blue); margin-top: 0; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button.btn {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button.btn-cancel {
+            background-color: var(--grey);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: none;
+        }
+
+        button:hover { opacity: 0.9; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--primary-blue);
+            color: var(--white);
+        }
+
+        tr:hover { background-color: #f1f1f1; }
+
+        .actions button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            font-size: 0.8rem;
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-edit { background-color: var(--warning); color: #333; }
+        .btn-delete { background-color: var(--danger); color: white; }
+
+        .editing-mode {
+            border: 2px solid var(--warning);
+        }
+        .editing-badge {
+            background-color: var(--warning);
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>SkillBridge Manager</h1>
+        <p>Futuro do Trabalho</p>
+    </header>
+
+    <nav>
+        <button class="active" onclick="showTab('trilhas')">Trilhas de Aprendizagem</button>
+        <button onclick="showTab('usuarios')">Usuários</button>
+    </nav>
+
+    <div class="container">
+
+        <div id="trilhas" class="section active">
+            <div class="card" id="formCardTrilha">
+                <h2>Gerenciar Trilha <span id="badgeTrilha" class="editing-badge">Editando</span></h2>
+                
+                <div class="form-group">
+                    <label>Nome da Trilha</label>
+                    <input type="text" id="trilhaNome" placeholder="Ex: IA Generativa">
+                </div>
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <input type="text" id="trilhaDesc" placeholder="Descrição curta">
+                </div>
+                <div class="form-group">
+                    <label>Nível</label>
+                    <select id="trilhaNivel">
+                        <option value="INICIANTE">Iniciante</option>
+                        <option value="INTERMEDIARIO">Intermediário</option>
+                        <option value="AVANCADO">Avançado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Carga Horária (horas)</label>
+                    <input type="number" id="trilhaHoras" value="20">
+                </div>
+                <div class="form-group">
+                    <label>Foco Principal</label>
+                    <input type="text" id="trilhaFoco" placeholder="Ex: Tecnologia">
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn" id="btnSalvarTrilha" onclick="salvarTrilha()">Salvar Trilha</button>
+                    <button class="btn-cancel" id="btnCancelarTrilha" onclick="limparFormTrilha()">Cancelar</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Lista de Trilhas</h2>
+                <table id="tabelaTrilhas">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Nível</th>
+                            <th>Carga (h)</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="usuarios" class="section">
+            <div class="card" id="formCardUsuario">
+                <h2>Gerenciar Usuário <span id="badgeUsuario" class="editing-badge">Editando</span></h2>
+                
+                <div class="form-group">
+                    <label>Nome Completo</label>
+                    <input type="text" id="usuNome" placeholder="Ex: João Silva">
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="usuEmail" placeholder="joao@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Área de Atuação</label>
+                    <input type="text" id="usuArea" placeholder="Ex: Marketing">
+                </div>
+                <div class="form-group">
+                    <label>Nível de Carreira</label>
+                    <select id="usuNivel">
+                        <option value="Junior">Junior</option>
+                        <option value="Pleno">Pleno</option>
+                        <option value="Senior">Senior</option>
+                        <option value="Em transição">Em transição</option>
+                    </select>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn" id="btnSalvarUsuario" onclick="salvarUsuario()">Salvar Usuário</button>
+                    <button class="btn-cancel" id="btnCancelarUsuario" onclick="limparFormUsuario()">Cancelar</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Lista de Usuários</h2>
+                <table id="tabelaUsuarios">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Nível</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:5035/api/v1";
+
+        let idTrilhaEdicao = null;
+        let idUsuarioEdicao = null;
+
+        function showTab(tabName) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if(tabName === 'trilhas') {
+                carregarTrilhas();
+                limparFormTrilha();
+            }
+            if(tabName === 'usuarios') {
+                carregarUsuarios();
+                limparFormUsuario();
+            }
+        }
+
+        async function carregarTrilhas() {
+            try {
+                const response = await fetch(`${API_URL}/trilhas`);
+                const dados = await response.json();
+                const tbody = document.querySelector('#tabelaTrilhas tbody');
+                tbody.innerHTML = '';
+
+                dados.forEach(trilha => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${trilha.id}</td>
+                            <td>${trilha.nome}</td>
+                            <td><span style="padding: 3px 8px; background: #e3f2fd; border-radius: 10px; font-size: 0.8em; color: #0288d1;">${trilha.nivel}</span></td>
+                            <td>${trilha.cargaHoraria}h</td>
+                            <td class="actions">
+                                <button class="btn-edit" onclick="prepararEdicaoTrilha(${trilha.id})">Editar</button>
+                                <button class="btn-delete" onclick="deletarTrilha(${trilha.id})">Excluir</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (erro) {
+                console.error("Erro:", erro);
+                alert("Erro ao conectar com a API.");
+            }
+        }
+
+        async function prepararEdicaoTrilha(id) {
+            try {
+                const response = await fetch(`${API_URL}/trilhas/${id}`);
+                const trilha = await response.json();
+
+                document.getElementById('trilhaNome').value = trilha.nome;
+                document.getElementById('trilhaDesc').value = trilha.descricao || '';
+                document.getElementById('trilhaNivel').value = trilha.nivel;
+                document.getElementById('trilhaHoras').value = trilha.cargaHoraria;
+                document.getElementById('trilhaFoco').value = trilha.focoPrincipal || '';
+
+                idTrilhaEdicao = id;
+                document.getElementById('btnSalvarTrilha').innerText = "Atualizar Trilha";
+                document.getElementById('btnCancelarTrilha').style.display = 'block';
+                document.getElementById('badgeTrilha').style.display = 'inline-block';
+                document.getElementById('formCardTrilha').classList.add('editing-mode');
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (error) {
+                alert("Erro ao buscar dados da trilha.");
+            }
+        }
+
+        async function salvarTrilha() {
+            const trilha = {
+                id: idTrilhaEdicao || 0,
+                nome: document.getElementById('trilhaNome').value,
+                descricao: document.getElementById('trilhaDesc').value,
+                nivel: document.getElementById('trilhaNivel').value,
+                cargaHoraria: parseInt(document.getElementById('trilhaHoras').value),
+                focoPrincipal: document.getElementById('trilhaFoco').value
+            };
+
+            let url = `${API_URL}/trilhas`;
+            let method = 'POST';
+
+            if (idTrilhaEdicao) {
+                url = `${API_URL}/trilhas/${idTrilhaEdicao}`;
+                method = 'PUT';
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(trilha)
+            });
+
+            if (response.ok) {
+                alert(idTrilhaEdicao ? 'Trilha atualizada!' : 'Trilha criada!');
+                limparFormTrilha();
+                carregarTrilhas();
+            } else {
+                const err = await response.json();
+                alert('Erro: ' + JSON.stringify(err));
+            }
+        }
+
+        function limparFormTrilha() {
+            idTrilhaEdicao = null;
+            document.getElementById('trilhaNome').value = '';
+            document.getElementById('trilhaDesc').value = '';
+            document.getElementById('trilhaHoras').value = '20';
+            document.getElementById('trilhaFoco').value = '';
+            
+            // Reseta botões e visual
+            document.getElementById('btnSalvarTrilha').innerText = "Salvar Trilha";
+            document.getElementById('btnCancelarTrilha').style.display = 'none';
+            document.getElementById('badgeTrilha').style.display = 'none';
+            document.getElementById('formCardTrilha').classList.remove('editing-mode');
+        }
+
+        async function deletarTrilha(id) {
+            if(!confirm("Tem certeza que deseja excluir?")) return;
+            await fetch(`${API_URL}/trilhas/${id}`, { method: 'DELETE' });
+            carregarTrilhas();
+        }
+
+        async function carregarUsuarios() {
+            try {
+                const response = await fetch(`${API_URL}/usuarios`);
+                const dados = await response.json();
+                const tbody = document.querySelector('#tabelaUsuarios tbody');
+                tbody.innerHTML = '';
+
+                dados.forEach(user => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${user.id}</td>
+                            <td>${user.nome}</td>
+                            <td>${user.email}</td>
+                            <td>${user.nivelCarreira || '-'}</td>
+                            <td class="actions">
+                                <button class="btn-edit" onclick="prepararEdicaoUsuario(${user.id})">Editar</button>
+                                <button class="btn-delete" onclick="deletarUsuario(${user.id})">Excluir</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (erro) {
+                console.error("Erro:", erro);
+            }
+        }
+
+        async function prepararEdicaoUsuario(id) {
+            try {
+                const response = await fetch(`${API_URL}/usuarios/${id}`);
+                const user = await response.json();
+
+                document.getElementById('usuNome').value = user.nome;
+                document.getElementById('usuEmail').value = user.email;
+                document.getElementById('usuArea').value = user.areaAtuacao || '';
+                document.getElementById('usuNivel').value = user.nivelCarreira || 'Junior';
+
+                idUsuarioEdicao = id;
+                document.getElementById('btnSalvarUsuario').innerText = "Atualizar Usuário";
+                document.getElementById('btnCancelarUsuario').style.display = 'block';
+                document.getElementById('badgeUsuario').style.display = 'inline-block';
+                document.getElementById('formCardUsuario').classList.add('editing-mode');
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (error) {
+                alert("Erro ao buscar dados do usuário.");
+            }
+        }
+
+        async function salvarUsuario() {
+            const user = {
+                id: idUsuarioEdicao || 0,
+                nome: document.getElementById('usuNome').value,
+                email: document.getElementById('usuEmail').value,
+                areaAtuacao: document.getElementById('usuArea').value,
+                nivelCarreira: document.getElementById('usuNivel').value
+            };
+
+            let url = `${API_URL}/usuarios`;
+            let method = 'POST';
+
+            if (idUsuarioEdicao) {
+                url = `${API_URL}/usuarios/${idUsuarioEdicao}`;
+                method = 'PUT';
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(user)
+            });
+
+            if (response.ok) {
+                alert(idUsuarioEdicao ? 'Usuário atualizado!' : 'Usuário criado!');
+                limparFormUsuario();
+                carregarUsuarios();
+            } else {
+                const err = await response.json();
+                alert('Erro: ' + (err.message || 'Falha ao salvar'));
+            }
+        }
+
+        function limparFormUsuario() {
+            idUsuarioEdicao = null;
+            document.getElementById('usuNome').value = '';
+            document.getElementById('usuEmail').value = '';
+            document.getElementById('usuArea').value = '';
+            
+            document.getElementById('btnSalvarUsuario').innerText = "Salvar Usuário";
+            document.getElementById('btnCancelarUsuario').style.display = 'none';
+            document.getElementById('badgeUsuario').style.display = 'none';
+            document.getElementById('formCardUsuario').classList.remove('editing-mode');
+        }
+
+        async function deletarUsuario(id) {
+            if(!confirm("Tem certeza que deseja excluir?")) return;
+            await fetch(`${API_URL}/usuarios/${id}`, { method: 'DELETE' });
+            carregarUsuarios();
+        }
+
+        carregarTrilhas();
+    </script>
+</body>
+</html>
