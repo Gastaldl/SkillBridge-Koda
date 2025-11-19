@@ -56,7 +56,7 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -171,6 +171,18 @@
             display: none;
         }
 
+        .badge-trilha {
+            padding: 4px 8px;
+            background: #e0f2f1;
+            color: #00695c;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 500;
+            border: 1px solid #b2dfdb;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+
     </style>
 </head>
 <body>
@@ -281,7 +293,7 @@
                             <th>Nome</th>
                             <th>Email</th>
                             <th>Nível</th>
-                            <th>Ações</th>
+                            <th>Trilha Matriculada</th> <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -293,6 +305,7 @@
     </div>
 
     <script>
+        // ATENÇÃO: Verifique se a porta da API está correta
         const API_URL = "http://localhost:5035/api/v1";
 
         let idTrilhaEdicao = null;
@@ -315,6 +328,7 @@
             }
         }
 
+        // --- LÓGICA TRILHAS ---
         async function carregarTrilhas() {
             try {
                 const response = await fetch(`${API_URL}/trilhas`);
@@ -407,7 +421,6 @@
             document.getElementById('trilhaHoras').value = '20';
             document.getElementById('trilhaFoco').value = '';
             
-            // Reseta botões e visual
             document.getElementById('btnSalvarTrilha').innerText = "Salvar Trilha";
             document.getElementById('btnCancelarTrilha').style.display = 'none';
             document.getElementById('badgeTrilha').style.display = 'none';
@@ -420,6 +433,7 @@
             carregarTrilhas();
         }
 
+        // --- LÓGICA USUÁRIOS ---
         async function carregarUsuarios() {
             try {
                 const response = await fetch(`${API_URL}/usuarios`);
@@ -428,12 +442,22 @@
                 tbody.innerHTML = '';
 
                 dados.forEach(user => {
+                    let trilhasHtml = '<span style="color: #999; font-size: 0.9em;">Nenhuma</span>';
+                    
+                    if (user.matriculas && user.matriculas.length > 0) {
+                        trilhasHtml = user.matriculas.map(m => {
+                            const nomeTrilha = m.trilha ? m.trilha.nome : `Trilha #${m.trilhaId}`;
+                            return `<span class="badge-trilha">${nomeTrilha}</span>`;
+                        }).join('<br>');
+                    }
+
                     tbody.innerHTML += `
                         <tr>
                             <td>${user.id}</td>
                             <td>${user.nome}</td>
                             <td>${user.email}</td>
                             <td>${user.nivelCarreira || '-'}</td>
+                            <td>${trilhasHtml}</td>
                             <td class="actions">
                                 <button class="btn-edit" onclick="prepararEdicaoUsuario(${user.id})">Editar</button>
                                 <button class="btn-delete" onclick="deletarUsuario(${user.id})">Excluir</button>

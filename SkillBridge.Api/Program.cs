@@ -4,6 +4,7 @@ using SkillBridge.Application.Services;
 using SkillBridge.Domain.Interfaces;
 using SkillBridge.Infrastructure.Data;
 using SkillBridge.Infrastructure.Repositories;
+using System.Text.Json.Serialization;
 using Asp.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +23,11 @@ builder.Services.AddScoped<ITrilhaService, TrilhaService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 // 3. Configuração da API, Versionamento e Swagger
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
 builder.Services.AddCors(options =>
 {

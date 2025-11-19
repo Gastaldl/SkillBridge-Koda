@@ -2,6 +2,7 @@
 using SkillBridge.Domain;
 using SkillBridge.Domain.Interfaces;
 using SkillBridge.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace SkillBridge.Infrastructure.Repositories
 {
@@ -16,7 +17,10 @@ namespace SkillBridge.Infrastructure.Repositories
 
         public async Task<IEnumerable<Usuario>> GetAllAsync()
         {
-            return await _context.Usuarios.ToListAsync();
+            return await _context.Usuarios
+                .Include(u => u.Matriculas)
+                .ThenInclude(m => m.Trilha)
+                .ToListAsync();
         }
 
         public async Task<Usuario?> GetByIdAsync(long id)
