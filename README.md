@@ -180,12 +180,6 @@ O projeto segue os princípios de **Clean Architecture** e **DDD (Domain-Driven 
   * **SkillBridge.Domain:** Camada de **Domínio**. Contém as Entidades (`Models`), Interfaces (`IRepository`) e Exceções Customizadas. É o núcleo do projeto, sem dependências externas.
   * **SkillBridge.Infrastructure:** Camada de **Infraestrutura**. Implementa o acesso a dados (`Repositories`), configuração do Entity Framework (`AppDbContext`) e mapeamento do Oracle.
 
------
 
-## Integrantes
-
-  * **Márcio Gastaldi** - RM98811
-  * **Arthur Bessa Pian** - RM99215
-  * **Davi Desenzi** - RM550849
 
 
